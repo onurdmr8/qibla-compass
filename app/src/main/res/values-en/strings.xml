@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Qibla Compass</string>
+    <string name="select_city">Select City</string>
+    <string name="gps_location">Get GPS Location</string>
+    <string name="calibration_title">Compass Calibration</string>
+    <string name="calibration_desc">For best compass accuracy, stay away from metal objects or magnetic phone cases.</string>
+    <string name="aligned_to_qibla">Aligned to Qibla!</string>
+    <string name="turn_until_aligned">Rotate phone until green indicator appears and vibrates</string>
+    <string name="qibla_angle">Qibla Angle</string>
+    <string name="distance_to_kaaba">Distance to Kaaba</string>
+    <string name="change_city">Change City</string>
+</resources>

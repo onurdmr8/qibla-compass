@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Qibla Kompass</string>
+    <string name="select_city">Stadt wählen</string>
+    <string name="gps_location">GPS-Standort abrufen</string>
+    <string name="calibration_title">Kompass-Kalibrierung</string>
+    <string name="calibration_desc">Halten Sie sich für beste Genauigkeit von metallischen Gegenständen oder Magneten fern.</string>
+    <string name="aligned_to_qibla">Zur Qibla ausgerichtet!</string>
+    <string name="turn_until_aligned">Drehen Sie das Telefon, bis die grüne Anzeige erscheint und vibriert</string>
+    <string name="qibla_angle">Qibla-Winkel</string>
+    <string name="distance_to_kaaba">Entfernung zur Kaaba</string>
+    <string name="change_city">Stadt ändern</string>
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">بوصلة القبلة</string>
+    <string name="select_city">اختيار المدينة</string>
+    <string name="gps_location">تحديد موقع GPS</string>
+    <string name="calibration_title">معايرة البوصلة</string>
+    <string name="calibration_desc">للحصول على أفضل دقة، ابتعد عن الأجسام المعدنية أو الأغطية المغناطيسية.</string>
+    <string name="aligned_to_qibla">تم تحديد اتجاه القبلة!</string>
+    <string name="turn_until_aligned">أدر هاتفك حتى يظهر المؤشر الأخضر وتشعر بالاهتزاز</string>
+    <string name="qibla_angle">زاوية القبلة</string>
+    <string name="distance_to_kaaba">المسافة إلى الكعبة</string>
+    <string name="change_city">تغيير المدينة</string>
+</resources>
