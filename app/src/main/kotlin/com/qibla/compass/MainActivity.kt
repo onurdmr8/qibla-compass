@@ -24,12 +24,14 @@ import com.qibla.compass.model.City
 import com.qibla.compass.model.PredefinedCities
 import com.qibla.compass.ui.compass.CompassScreen
 import com.qibla.compass.util.CompassSensorManager
+import com.qibla.compass.util.InterstitialAdManager
 import com.qibla.compass.util.QiblaCalculator
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var compassSensorManager: CompassSensorManager
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var interstitialAdManager: InterstitialAdManager
 
     private var heading by mutableFloatStateOf(0f)
     private var isCalibrated by mutableStateOf(true)
@@ -51,6 +53,7 @@ class MainActivity : ComponentActivity() {
 
         // Google AdMob SDK'sını başlat
         MobileAds.initialize(this) {}
+        interstitialAdManager = InterstitialAdManager(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -83,6 +86,7 @@ class MainActivity : ComponentActivity() {
                         currentCity = currentCity,
                         onCitySelected = { selected ->
                             currentCity = selected
+                            interstitialAdManager.showIfReady(this@MainActivity)
                         },
                         onRequestGps = {
                             checkAndRequestLocationPermission()
