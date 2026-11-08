@@ -8,7 +8,7 @@ android {
   namespace = "com.qibla.compass"
   compileSdk = 36
   defaultConfig {
-    applicationId = "com.qibla.compass"
+    applicationId = "com.qibla.compass_fast"
     minSdk = 24
     targetSdk = 36
     versionCode = 1
