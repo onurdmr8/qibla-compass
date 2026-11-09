@@ -9,4 +9,9 @@
     <string name="qibla_angle">زاوية القبلة</string>
     <string name="distance_to_kaaba">المسافة إلى الكعبة</string>
     <string name="change_city">تغيير المدينة</string>
+    <string name="search_city">البحث عن مدينة…</string>
+    <string name="permission_denied_select_city">لم يتم منح إذن الموقع. يرجى اختيار مدينتك من القائمة.</string>
+    <string name="current_location">الموقع الحالي</string>
+    <string name="no_city_found">لم يتم العثور على نتائج</string>
+    <string name="ok">حسناً</string>
 </resources>

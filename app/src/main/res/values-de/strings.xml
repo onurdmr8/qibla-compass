@@ -9,4 +9,9 @@
     <string name="qibla_angle">Qibla-Winkel</string>
     <string name="distance_to_kaaba">Entfernung zur Kaaba</string>
     <string name="change_city">Stadt ändern</string>
+    <string name="search_city">Stadt suchen…</string>
+    <string name="permission_denied_select_city">Standortberechtigung nicht erteilt. Bitte wählen Sie Ihre Stadt aus der Liste.</string>
+    <string name="current_location">Aktueller Standort</string>
+    <string name="no_city_found">Keine Stadt gefunden</string>
+    <string name="ok">OK</string>
 </resources>

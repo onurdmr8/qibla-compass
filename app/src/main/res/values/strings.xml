@@ -9,4 +9,9 @@
     <string name="qibla_angle">Kıble Açısı</string>
     <string name="distance_to_kaaba">Kabe\'ye Mesafe</string>
     <string name="change_city">Şehir Değiştir</string>
+    <string name="search_city">Şehir ara…</string>
+    <string name="permission_denied_select_city">Konum izni verilmediği için lütfen şehrinizi listeden seçin.</string>
+    <string name="current_location">Mevcut Konum</string>
+    <string name="no_city_found">Aramanıza uygun şehir bulunamadı</string>
+    <string name="ok">Tamam</string>
 </resources>

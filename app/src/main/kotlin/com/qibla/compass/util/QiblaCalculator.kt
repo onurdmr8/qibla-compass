@@ -58,4 +58,30 @@ object QiblaCalculator {
             else -> "K"
         }
     }
+
+    /**
+     * İki koordinat noktası arasındaki mesafeyi Haversine formülü ile km cinsinden hesaplar.
+     */
+    fun calculateDistanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val earthRadiusKm = 6371.0
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val l1 = Math.toRadians(lat1)
+        val l2 = Math.toRadians(lat2)
+
+        val a = sin(dLat / 2).pow(2) + sin(dLon / 2).pow(2) * cos(l1) * cos(l2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        return earthRadiusKm * c
+    }
+
+    /**
+     * Belirtilen koordinatlara en yakın tanımlı şehri bulur (offline fallback için).
+     */
+    fun findNearestPredefinedCity(userLat: Double, userLon: Double): com.qibla.compass.model.City? {
+        return com.qibla.compass.model.PredefinedCities.list.minByOrNull { city ->
+            calculateDistanceBetween(userLat, userLon, city.latitude, city.longitude)
+        }
+    }
 }
+

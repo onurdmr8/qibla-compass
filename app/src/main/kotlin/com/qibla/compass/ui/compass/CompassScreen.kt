@@ -24,10 +24,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOff
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -69,6 +73,7 @@ import com.qibla.compass.model.City
 import com.qibla.compass.model.PredefinedCities
 import com.qibla.compass.ui.components.AdBanner
 import com.qibla.compass.util.QiblaCalculator
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -79,10 +84,12 @@ fun CompassScreen(
     heading: Float,
     isCalibrated: Boolean,
     currentCity: City,
+    showCitySheet: Boolean,
+    isPermissionDeniedReason: Boolean,
+    onShowCitySheetChange: (Boolean) -> Unit,
     onCitySelected: (City) -> Unit,
     onRequestGps: () -> Unit
 ) {
-    var showCitySheet by remember { mutableStateOf(false) }
     var showCalibrationDialog by remember { mutableStateOf(false) }
 
     val qiblaBearing = remember(currentCity) {
@@ -123,7 +130,7 @@ fun CompassScreen(
                 },
                 actions = {
                     // Konum / Şehir değiştir
-                    IconButton(onClick = { showCitySheet = true }) {
+                    IconButton(onClick = { onShowCitySheetChange(true) }) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = stringResource(R.string.select_city),
@@ -279,7 +286,7 @@ fun CompassScreen(
 
             // Şehir değiştirme butonu
             OutlinedButton(
-                onClick = { showCitySheet = true },
+                onClick = { onShowCitySheetChange(true) },
                 shape = RoundedCornerShape(20.dp),
                 border = BorderStroke(1.dp, goldColor.copy(alpha = 0.5f)),
                 modifier = Modifier.padding(bottom = 6.dp)
@@ -305,11 +312,12 @@ fun CompassScreen(
         CitySelectionSheet(
             cities = PredefinedCities.list,
             selectedCity = currentCity,
+            isPermissionDeniedReason = isPermissionDeniedReason,
             onCitySelect = {
                 onCitySelected(it)
-                showCitySheet = false
+                onShowCitySheetChange(false)
             },
-            onDismiss = { showCitySheet = false }
+            onDismiss = { onShowCitySheetChange(false) }
         )
     }
 
@@ -482,63 +490,157 @@ fun QiblaCompassView(
 fun CitySelectionSheet(
     cities: List<City>,
     selectedCity: City,
+    isPermissionDeniedReason: Boolean,
     onCitySelect: (City) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredCities = remember(searchQuery, cities) {
+        if (searchQuery.isBlank()) {
+            cities
+        } else {
+            val query = searchQuery.trim().lowercase(Locale.getDefault())
+            cities.filter {
+                it.name.lowercase(Locale.getDefault()).contains(query) ||
+                it.country.lowercase(Locale.getDefault()).contains(query)
+            }
+        }
+    }
+
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 24.dp)
         ) {
             Text(
                 text = stringResource(R.string.select_city),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(cities) { city ->
-                    val isSelected = city.name == selectedCity.name
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onCitySelect(city) },
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.surfaceVariant
-                        ),
-                        shape = RoundedCornerShape(10.dp)
+            // Konum izni verilmediği için açıldıysa bilgilendirme kartı göster
+            if (isPermissionDeniedReason) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFF59E0B).copy(alpha = 0.15f)
+                    ),
+                    border = BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.4f)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
+                        Icon(
+                            imageVector = Icons.Default.LocationOff,
+                            contentDescription = null,
+                            tint = Color(0xFFF59E0B),
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = stringResource(R.string.permission_denied_select_city),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                        )
+                    }
+                }
+            }
+
+            // Arama Çubuğu
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+                placeholder = { Text(stringResource(R.string.search_city)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline
+                    )
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.outline
+                            )
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            if (filteredCities.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.no_city_found),
+                        color = MaterialTheme.colorScheme.outline,
+                        fontSize = 14.sp
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(filteredCities) { city ->
+                        val isSelected = city.name == selectedCity.name
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(14.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                                .clickable { onCitySelect(city) },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
+                                else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text(
+                                        text = city.name,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = city.country,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.outline
+                                    )
+                                }
                                 Text(
-                                    text = city.name,
+                                    text = "${QiblaCalculator.calculateQiblaBearing(city.latitude, city.longitude).toInt()}°",
                                     fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = city.country,
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.outline
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
-                            Text(
-                                text = "${QiblaCalculator.calculateQiblaBearing(city.latitude, city.longitude).toInt()}°",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
                         }
                     }
                 }

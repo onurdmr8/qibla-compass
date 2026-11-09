@@ -9,4 +9,9 @@
     <string name="qibla_angle">Qibla Angle</string>
     <string name="distance_to_kaaba">Distance to Kaaba</string>
     <string name="change_city">Change City</string>
+    <string name="search_city">Search city…</string>
+    <string name="permission_denied_select_city">Location permission not granted. Please select your city from the list.</string>
+    <string name="current_location">Current Location</string>
+    <string name="no_city_found">No city found</string>
+    <string name="ok">OK</string>
 </resources>
